@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">AI Soil Health Advisory System | Indian Farmer Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i data-lucide="sprout"></i>
+                <h1>Agri<span>Pulse</span></h1>
+            </div>
+            <nav>
+                <div class="lang-selector">
+                    <i data-lucide="languages"></i>
+                    <select id="language">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi (हिंदी)</option>
+                        <option value="Marathi">Marathi (मराठी)</option>
+                        <option value="Bengali">Bengali (বাংলা)</option>
+                        <option value="Telugu">Telugu (తెలుగు)</option>
+                        <option value="Tamil">Tamil (தமிழ்)</option>
+                        <option value="Gujarati">Gujarati (ગુજરાતી)</option>
+                        <option value="Urdu">Urdu (اردو)</option>
+                        <option value="Kannada">Kannada (ಕನ್ನಡ)</option>
+                        <option value="Odia">Odia (ଓଡ଼ିଆ)</option>
+                        <option value="Malayalam">Malayalam (മലയാളം)</option>
+                        <option value="Punjabi">Punjabi (ਪੰਜਾਬੀ)</option>
+                        <option value="Assamese">Assamese (অসমীয়া)</option>
+                        <option value="Maithili">Maithili (মৈথিলী)</option>
+                    </select>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2 data-i18n="title">AI Soil Health Advisory System</h2>
+            <p data-i18n="subtitle">Empowering Indian farmers with precision agriculture and AI-driven insights.</p>
+        </section>
+
+        <div class="dashboard-grid">
+            <!-- Input Section -->
+            <aside class="input-card glass">
+                <div class="card-header">
+                    <i data-lucide="map-pin"></i>
+                    <h3 data-i18n="field_location">Field Location</h3>
+                </div>
+                <div id="map-container" class="form-group">
+                    <div id="map"></div>
+                    <p class="map-hint" data-i18n="map_hint">Click on your farm location to fetch weather data</p>
+                </div>
+
+                <div class="card-header">
+                    <i data-lucide="settings-2"></i>
+                    <h3 data-i18n="soil_params">Soil Parameters</h3>
+                </div>
+                <form id="soilForm">
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="nitrogen" data-i18n="nitrogen">Nitrogen (N) <span class="val-display" id="n-val">50%</span></label>
+                            <input type="range" id="nitrogen" min="0" max="100" value="50" class="percentage-slider">
+                        </div>
+                        <div class="form-group">
+                            <label for="phosphorus" data-i18n="phosphorus">Phosphorus (P) <span class="val-display" id="p-val">50%</span></label>
+                            <input type="range" id="phosphorus" min="0" max="100" value="50" class="percentage-slider">
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="potassium" data-i18n="potassium">Potassium (K) <span class="val-display" id="k-val">50%</span></label>
+                            <input type="range" id="potassium" min="0" max="100" value="50" class="percentage-slider">
+                        </div>
+                        <div class="form-group">
+                            <label for="ph" data-i18n="soil_ph">Soil pH</label>
+                            <input type="number" id="ph" step="0.1" placeholder="0-14" min="0" max="14" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="moisture" data-i18n="moisture">Moisture (%)</label>
+                        <input type="number" id="moisture" placeholder="0-100" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="soil_type" data-i18n="soil_type">Soil Type</label>
+                        <select id="soil_type" required>
+                            <option value="Sandy" data-i18n="opt_sandy">Sandy</option>
+                            <option value="Loamy" data-i18n="opt_loamy">Loamy</option>
+                            <option value="Clay" data-i18n="opt_clay">Clay</option>
+                            <option value="Black" data-i18n="opt_black">Black</option>
+                            <option value="Red" data-i18n="opt_red">Red</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="land_area" data-i18n="land_area">Land Area</label>
+                        <div class="input-with-select">
+                            <input type="number" id="land_area" placeholder="e.g. 5" min="0.1" step="0.1" required>
+                            <select id="land_unit">
+                                <option value="Acre" data-i18n="opt_acre">Acre</option>
+                                <option value="Hectare" data-i18n="opt_hectare">Hectare</option>
+                                <option value="Square Feet" data-i18n="opt_sqft">Sq Ft</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="season" data-i18n="season">Season</label>
+                        <select id="season">
+                            <option value="Kharif" data-i18n="opt_kharif">Kharif</option>
+                            <option value="Rabi" data-i18n="opt_rabi">Rabi</option>
+                            <option value="Zaid" data-i18n="opt_zaid">Zaid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="water_availability" data-i18n="water_avail">Water Availability</label>
+                        <select id="water_availability">
+                            <option value="Rainfed" data-i18n="opt_rainfed">Rainfed</option>
+                            <option value="Irrigated" data-i18n="opt_irrigated">Irrigated</option>
+                            <option value="Limited" data-i18n="opt_limited">Limited</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="preferred_crop" data-i18n="preferred_crop">Preferred Crop (Optional)</label>
+                        <input type="text" id="preferred_crop" placeholder="e.g. Wheat, Rice, Chillies">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;" data-i18n="preferred_hint">We\'ll tell you how to prepare soil for this specific crop.</p>
+                    </div>
+
+                    <button type="submit" id="analyzeBtn">
+                        <span data-i18n="generate_btn">Generate Advisory</span>
+                        <i data-lucide="sparkles"></i>
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Results Section -->
+            <div class="results-container">
+                <div id="loading" class="loading hidden">
+                    <div class="loader"></div>
+                    <p data-i18n="loading_text">AI is analyzing your soil data...</p>
+                </div>
+
+                <div id="results" class="hidden">
+                    <!-- Preferred Crop Special Analysis -->
+                    <section id="preferredSection" class="results-section hidden">
+                        <div class="section-header">
+                            <i data-lucide="target"></i>
+                            <h3 data-i18n="pref_analysis">Your Preferred Crop Analysis</h3>
+                        </div>
+                        <div class="preferred-card glass">
+                            <div id="preferredStatus" class="status-indicator">
+                                <!-- Status Badge (Possible/Avoid) -->
+                            </div>
+                            <div class="preferred-content">
+                                <h4 id="preferredCropName">---</h4>
+                                <p id="preferredReason">Waiting for analysis...</p>
+                                <div id="preferredSteps" class="steps-grid">
+                                    <!-- Steps/Instructions injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Kharif Crops -->
+                    <section class="results-section">
+                        <div class="section-header">
+                            <i data-lucide="sun"></i>
+                            <h3 data-i18n="kharif_season">Kharif Season (Monsoon)</h3>
+                        </div>
+                        <div id="kharifList" class="crop-grid"></div>
+                    </section>
+
+                    <!-- Rabi Crops -->
+                    <section class="results-section">
+                        <div class="section-header">
+                            <i data-lucide="cloud-snow"></i>
+                            <h3 data-i18n="rabi_season">Rabi Season (Winter)</h3>
+                        </div>
+                        <div id="rabiList" class="crop-grid"></div>
+                    </section>
+
+                    <!-- Zaid & Perennial Crops -->
+                    <section class="results-section">
+                        <div class="section-header">
+                            <i data-lucide="leaf"></i>
+                            <h3 data-i18n="zaid_season">Zaid & Perennial (Summer/All-Year)</h3>
+                        </div>
+                        <div id="zaidList" class="crop-grid"></div>
+                    </section>
+
+                    <!-- Regional Alternatives (AI Suggestions) -->
+                    <section class="results-section alternatives-box">
+                        <div class="section-header">
+                            <i data-lucide="sparkles"></i>
+                            <h3 data-i18n="expert_sugg">Expert Regional Suggestions</h3>
+                        </div>
+                        <div id="alternativesList" class="alternatives-grid">
+                            <!-- AI suggestions -->
+                        </div>
+                    </section>
+
+                    <!-- Fertilizer & Corrections -->
+                    <div class="details-row">
+                        <section class="details-card glass">
+                            <div class="section-header">
+                                <i data-lucide="flask-conical"></i>
+                                <h3 data-i18n="fert_req">Fertilizer Requirements</h3>
+                            </div>
+                            <div id="fertilizerInfo">
+                                <!-- Fertilizer breakdown -->
+                            </div>
+                        </section>
+
+                        <section class="details-card glass">
+                            <div class="section-header">
+                                <i data-lucide="wrench"></i>
+                                <h3 data-i18n="soil_corr">Soil Corrections</h3>
+                            </div>
+                            <ul id="correctionList">
+                                <!-- Corrections -->
+                            </ul>
+                        </section>
+                    </div>
+
+                    <!-- AI Advisory -->
+                    <section class="advisory-card glass">
+                        <div class="section-header">
+                            <i data-lucide="bot"></i>
+                            <h3 data-i18n="ai_advisory">AI Agricultural Advisory</h3>
+                        </div>
+                        <div id="advisoryText" class="advisory-content">
+                            <!-- Advisory text -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <i data-lucide="clipboard-list"></i>
+                    <h3 data-i18n="no_data">No Data Analyzed</h3>
+                    <p data-i18n="no_data_desc">Enter your soil parameters and click "Generate Advisory" to get personalized recommendations.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p data-i18n="footer_text">&copy; 2024 AI Soil Management System for Indian Farmers. Built for sustainable agriculture.</p>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
